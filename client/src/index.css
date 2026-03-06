@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+/* Estilos globales para Bodesa */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f3f4f6;
+  color: #1a1a1a;
+}
+
+/* Capa de componentes personalizada */
+@layer components {
+  .input-bodesa {
+    background-color: #fdf2f8; /* El rosa claro de tu diseño */
+    border: 1px solid #fbcfe8;
+    padding: 0.5rem;
+    border-radius: 0.375rem;
+    width: 100%;
+  }
+}
