@@ -13,6 +13,7 @@ router.get('/', async (req, res) => {
                 c.fechainicio AS fecha_firma, 
                 c.fechatermino AS fecha_termino, 
                 c.estado, 
+                p.idproveedor, -- <--- AGREGAMOS EL ID DEL PROVEEDOR AQUÍ
                 p.razonsocial AS proveedor, 
                 c.costo
             FROM public.contrato c
