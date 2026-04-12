@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FilePlus, Save, ArrowLeft, Search } from 'lucide-react';
+import { FilePlus, Save, ArrowLeft, Search, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const AgregarContrato = () => {
@@ -15,7 +15,7 @@ const AgregarContrato = () => {
     renovado: false,
     asistencia: '',
     descripcion: '',
-    estado: true
+    estado: 1
   });
 
   const [catalogos, setCatalogos] = useState({ tipos: [], proveedores: [] });

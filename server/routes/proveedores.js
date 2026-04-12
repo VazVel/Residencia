@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db');
+const { verificarToken, esAdmin } = require('../middleware/auth');
 
-router.get('/', async (req, res) => {
+router.get('/', verificarToken, async (req, res) => {
     try {
         const result = await db.query('SELECT * FROM public.proveedor');
         res.json(result.rows); // Esto asegura que devuelva un [ ]
@@ -12,7 +13,7 @@ router.get('/', async (req, res) => {
 });
 
 // AGREGAR NUEVO PROVEEDOR
-router.post('/nuevo', async (req, res) => {
+router.post('/nuevo', verificarToken, esAdmin, async (req, res) => {
     const { rfc, razonsocial, nombrecomercial, direccionfiscal, telefono, correo } = req.body;
 
     // Validación básica de campos obligatorios
@@ -37,7 +38,7 @@ router.post('/nuevo', async (req, res) => {
 });
 
 // EDITAR PROVEEDOR (Seguro: ID en el body)
-router.put('/actualizar', async (req, res) => {
+router.put('/actualizar', verificarToken, esAdmin, async (req, res) => {
     const { idproveedor, rfc, razonsocial, nombrecomercial, direccionfiscal, telefono, correo } = req.body;
 
     if (!idproveedor) {

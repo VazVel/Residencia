@@ -16,10 +16,15 @@ app.use(express.json());
 const contratosRoutes = require('./routes/contratos');
 const proveedoresRoutes = require('./routes/proveedores');
 const catContratosRoutes = require('./routes/catcontratos');
+const usuariosRoutes = require('./routes/usuarios');
+const authRoutes = require('./routes/auth');
+const { verificarToken, esAdmin } = require('./middleware/auth');
 
-app.use('/api/contratos', contratosRoutes);
-app.use('/api/proveedores', proveedoresRoutes);
-app.use('/api/catcontratos', catContratosRoutes);
+app.use('/api/contratos', verificarToken, contratosRoutes);
+app.use('/api/proveedores', verificarToken, proveedoresRoutes);
+app.use('/api/catcontratos', verificarToken, catContratosRoutes); 
+app.use('/api/usuarios', verificarToken, esAdmin, usuariosRoutes);
+app.use('/api/auth', authRoutes);
 
 // 3. SERVIR FRONTEND (PRODUCCIÓN)
 app.use(express.static(path.join(__dirname, '../client/dist')));

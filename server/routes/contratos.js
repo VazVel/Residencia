@@ -1,10 +1,19 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db'); 
+const { verificarToken, esAdmin } = require('../middleware/auth');
 
 // GET: Obtener contratos con JOINs para la tabla de React
-router.get('/', async (req, res) => {
+router.get('/', verificarToken, async (req, res) => {
     try {
+        // 1. Sincronización de estados según la fecha actual
+        await db.query(`
+            UPDATE public.contrato 
+            SET estado = 2 
+            WHERE estado = 1 AND fechatermino < CURRENT_DATE
+        `);
+
+        // 2. Consulta con ordenamiento prioritario para vigentes
         const queryText = `
             SELECT 
                 c.idcontrato AS id, 
@@ -13,19 +22,23 @@ router.get('/', async (req, res) => {
                 c.fechainicio AS fecha_firma, 
                 c.fechatermino AS fecha_termino, 
                 c.estado, 
-                p.idproveedor, -- <--- AGREGAMOS EL ID DEL PROVEEDOR AQUÍ
+                p.idproveedor,
                 p.razonsocial AS proveedor, 
                 c.costo
             FROM public.contrato c
             LEFT JOIN public.catcontratos cat ON c.idtipo = cat.idcat
             LEFT JOIN public.proveedor p ON c.idproveedor = p.idproveedor
-            ORDER BY c.fechatermino ASC`;
+            WHERE c.estado != 0 
+            ORDER BY 
+                c.estado ASC,          -- Primero estado 1 (Vigente), luego 2 (Caducado)
+                c.fechatermino ASC;    -- Dentro de cada grupo, ordenar por fecha más cercana
+        `;
             
         const result = await db.query(queryText);
         res.json(result.rows);
     } catch (err) {
         console.error("Error en GET /contratos:", err.message);
-        res.status(500).json({ error: "Error al obtener la lista de contratos" });
+        res.status(500).json({ error: "Error al obtener la lista" });
     }
 });
 
@@ -97,7 +110,7 @@ router.post('/detalle', async (req, res) => {
     }
 });
 
-router.put('/actualizar', async (req, res) => {
+router.put('/actualizar', verificarToken, esAdmin, async (req, res) => {
     // Extraemos el idcontrato junto con el resto de los datos del body
     const { 
         idcontrato, 
@@ -148,6 +161,55 @@ router.put('/actualizar', async (req, res) => {
     } catch (err) {
         console.error("Error en UPDATE seguro:", err.message);
         res.status(500).json({ error: "Error interno al procesar la actualización" });
+    }
+});
+
+
+// Borrado lógico de un contrato
+router.put('/eliminar', verificarToken, esAdmin, async (req, res) => {
+    const { idcontrato } = req.body; // Seguimos tu estándar de seguridad en el body
+
+    if (!idcontrato) {
+        return res.status(400).json({ error: "ID de contrato requerido" });
+    }
+
+    try {
+        const queryText = `
+            UPDATE public.contrato 
+            SET estado = 0 
+            WHERE idcontrato = $1 
+            RETURNING idcontrato`;
+        
+        const result = await db.query(queryText, [idcontrato]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: "Contrato no encontrado" });
+        }
+
+        res.json({ message: "Contrato eliminado correctamente (Borrado Lógico)" });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ error: "Error al eliminar el registro" });
+    }
+});
+
+// Obtener TODO para el panel de administración
+router.get('/all', verificarToken, esAdmin, async (req, res) => {
+    try {
+        const queryText = `
+            SELECT 
+                c.idcontrato AS id, c.nombre, cat.nombre_tipo AS tipo, 
+                c.fechainicio AS fecha_firma, c.fechatermino AS fecha_termino, 
+                c.estado, p.razonsocial AS proveedor, c.costo
+            FROM public.contrato c
+            LEFT JOIN public.catcontratos cat ON c.idtipo = cat.idcat
+            LEFT JOIN public.proveedor p ON c.idproveedor = p.idproveedor
+            ORDER BY c.estado DESC, c.fechatermino ASC`;
+            
+        const result = await db.query(queryText);
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: "Error de servidor" });
     }
 });
 

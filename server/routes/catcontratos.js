@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db');
+const { verificarToken, esAdmin } = require('../middleware/auth');
 
 router.get('/', async (req, res) => {
     try {
@@ -12,7 +13,7 @@ router.get('/', async (req, res) => {
 });
 
 // AGREGAR NUEVA CATEGORÍA
-router.post('/nuevo', async (req, res) => {
+router.post('/nuevo', verificarToken, esAdmin, async (req, res) => {
     const { nombre_tipo } = req.body;
 
     if (!nombre_tipo) {
@@ -37,7 +38,7 @@ router.post('/nuevo', async (req, res) => {
 });
 
 // EDITAR CATEGORÍA (Seguro: ID en el body)
-router.put('/actualizar', async (req, res) => {
+router.put('/actualizar', verificarToken, esAdmin, async (req, res) => {
     const { idcat, nombre_tipo } = req.body;
 
     if (!idcat || !nombre_tipo) {
