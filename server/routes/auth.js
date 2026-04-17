@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 // Clave secreta (En producción usa process.env.JWT_SECRET)
-const JWT_SECRET = "Bodesa_Secret_Key_2026"; 
+const JWT_SECRET = process.env.JWT_SECRET; 
 
 router.post('/login', async (req, res) => {
     const { username, password } = req.body;
