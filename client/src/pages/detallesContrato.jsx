@@ -8,8 +8,17 @@ const DetallesContrato = () => {
   const [editando, setEditando] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // RECUPERACIÓN DE ROL PARA VALIDACIÓN VISUAL
+  // Recuperamos el rol del usuario para la lógica de navegación y permisos
   const userRole = localStorage.getItem('userRole');
+
+  // --- FUNCIÓN DE NAVEGACIÓN DINÁMICA (Corrección del Bug) ---
+  const handleBack = () => {
+    if (parseInt(userRole) === 1) {
+      navigate('/admin'); // Redirige a la Consola de Administración
+    } else {
+      navigate('/home');  // Redirige al Dashboard de Usuario
+    }
+  };
 
   const [formData, setFormData] = useState({
     nombre: '',
@@ -96,11 +105,18 @@ const DetallesContrato = () => {
     <div className="min-h-screen bg-gray-100 font-sans">
       <header className="bg-[#4a6b8a] text-white p-4 shadow-md flex justify-between items-center px-8">
         <div className="flex items-center gap-6">
-          <img src="/bodesa.png" alt="Bodesa" className="h-10 w-auto object-contain" />
+          <img 
+            src="/bodesa.png" 
+            alt="Bodesa" 
+            className="h-10 w-auto object-contain cursor-pointer" 
+            onClick={handleBack} 
+          />
           <span className="text-xl font-bold tracking-wider uppercase">Contratos</span>
         </div>
         <div className="flex items-center gap-6 text-sm font-semibold">
-          <span className="cursor-pointer hover:text-gray-200" onClick={() => navigate('/home')}>Contratos</span>
+          <span className="cursor-pointer hover:text-gray-200" onClick={handleBack}>
+            {parseInt(userRole) === 1 ? 'Panel Admin' : 'Inicio'}
+          </span>
           <span className="bg-[#1d3557]/30 px-4 py-2 rounded border-b-2 border-white/50">Detalles</span>
           <Search size={20} className="cursor-pointer text-gray-200" />
         </div>
@@ -113,7 +129,7 @@ const DetallesContrato = () => {
               {editando ? 'Modificar Registro' : 'Visualización de Registro'}
             </h1>
             <button 
-              onClick={() => navigate('/home')}
+              onClick={handleBack}
               className="flex items-center gap-2 text-slate-600 hover:text-slate-800 transition font-bold uppercase text-xs"
             >
               <ArrowLeft size={20} /> Volver
@@ -129,14 +145,13 @@ const DetallesContrato = () => {
             </div>
 
             <form onSubmit={handleUpdate} className="grid grid-cols-2 gap-x-10 gap-y-6">
-              {/* --- CAMPOS DEL FORMULARIO --- */}
               <div className="col-span-1">
                 <label className="block text-[10px] font-black uppercase mb-1 text-gray-500 tracking-widest">Nombre del contrato</label>
                 <input 
                   type="text" 
                   maxLength={100}
                   disabled={!editando}
-                  className={`w-full p-3 rounded-lg border font-bold transition-all ${editando ? 'bg-pink-50 border-pink-200 focus:ring-1 focus:ring-blue-400 outline-none' : 'bg-gray-50 border-gray-100 cursor-not-allowed text-gray-500'}`}
+                  className={`w-full p-3 rounded-lg border font-bold transition-all ${editando ? 'bg-pink-50 border-pink-200 outline-none' : 'bg-gray-50 border-gray-100 text-gray-500'}`}
                   value={formData.nombre}
                   onChange={(e) => setFormData({...formData, nombre: e.target.value})}
                 />
@@ -184,7 +199,7 @@ const DetallesContrato = () => {
                 <input 
                   type="checkbox" 
                   disabled={!editando}
-                  className="w-5 h-5 text-blue-600 rounded cursor-pointer disabled:cursor-not-allowed"
+                  className="w-5 h-5 text-blue-600 rounded cursor-pointer"
                   checked={formData.renovado}
                   onChange={(e) => setFormData({...formData, renovado: e.target.checked})} 
                 />
@@ -235,7 +250,7 @@ const DetallesContrato = () => {
                   rows="4" 
                   maxLength={200}
                   disabled={!editando}
-                  className={`w-full p-3 rounded-lg border font-bold focus:ring-1 focus:ring-blue-400 outline-none ${editando ? 'bg-pink-50 border-pink-200' : 'bg-gray-50 border-gray-100 text-gray-500'}`}
+                  className={`w-full p-3 rounded-lg border font-bold outline-none ${editando ? 'bg-pink-50 border-pink-200' : 'bg-gray-50 border-gray-100 text-gray-500'}`}
                   value={formData.descripcion}
                   onChange={(e) => setFormData({...formData, descripcion: e.target.value})}
                 ></textarea>
@@ -244,7 +259,7 @@ const DetallesContrato = () => {
                 </p>
               </div>
 
-              {/* LÓGICA DE PERMISOS: Solo Admin (Rol 1) ve los botones de acción */}
+              {/* LÓGICA DE PERMISOS: Solo Admin (Rol 1) puede editar */}
               {parseInt(userRole) === 1 && (
                 <div className="col-span-2 flex justify-center mt-6 gap-6">
                   {editando ? (
@@ -252,7 +267,7 @@ const DetallesContrato = () => {
                       <button 
                         type="button"
                         onClick={() => setEditando(false)}
-                        className="bg-gray-500 text-white px-12 py-4 rounded-full hover:bg-gray-600 shadow-md transition-all font-black uppercase text-xs tracking-widest"
+                        className="bg-gray-500 text-white px-12 py-4 rounded-full hover:bg-gray-600 transition-all font-black uppercase text-xs tracking-widest"
                       >
                         Cancelar
                       </button>
@@ -260,21 +275,16 @@ const DetallesContrato = () => {
                         type="submit" 
                         className="bg-green-600 text-white px-16 py-4 rounded-full hover:bg-green-700 shadow-lg transition-all flex items-center gap-2 font-black uppercase text-xs tracking-widest"
                       >
-                        <Save size={20} />
-                        Guardar Cambios
+                        <Save size={20} /> Guardar Cambios
                       </button>
                     </>
                   ) : (
                     <button 
                       type="button" 
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setEditando(true);
-                      }}
+                      onClick={() => setEditando(true)}
                       className="bg-[#4a6b8a] text-white px-20 py-4 rounded-full hover:bg-[#34506d] shadow-lg transition-all flex items-center gap-2 font-black uppercase text-xs tracking-widest"
                     >
-                      <Edit3 size={20} />
-                      Editar Registro
+                      <Edit3 size={20} /> Editar Registro
                     </button>
                   )}
                 </div>

@@ -20,9 +20,17 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
   (response) => response,
   (error) => {
+    // 1. Verificamos si es un error 401
     if (error.response && error.response.status === 401) {
-      localStorage.clear();
-      window.location.href = "/";
+      
+      // 2. IMPORTANTE: Verificamos que la ruta NO sea la de login
+      // Si el error 401 viene del login, NO redireccionamos para permitir ver el mensaje
+      const isLoginRequest = error.config.url.includes('/api/auth/login');
+
+      if (!isLoginRequest) {
+        localStorage.clear();
+        window.location.href = "/";
+      }
     }
     return Promise.reject(error);
   }

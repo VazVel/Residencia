@@ -17,13 +17,17 @@ const AdminDashboard = () => {
   })
 
   useEffect(() => {
-    // Endpoint que trae estado 0, 1 y 2
     axios.get('/api/contratos/all')
       .then(res => setContratos(res.data))
       .catch(err => console.error("Error cargando consola maestra:", err))
   }, [])
 
-  // Función para cerrar sesión
+  // Función para redirigir a los detalles del contrato
+  const handleVerContrato = (id) => {
+    localStorage.setItem('selectedContractId', id);
+    navigate('/ver-contrato'); 
+  }
+
   const handleLogout = () => {
     localStorage.clear();
     navigate('/');
@@ -67,7 +71,6 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 font-sans text-slate-900">
-      {/* HEADER DE ADMINISTRADOR COMPLETO */}
       <header className="bg-[#1d3557] text-white p-4 shadow-md border-b-4 border-[#f39c12]">
         <div className="max-w-[100%] mx-auto flex justify-between items-center px-4">
           <div className="flex items-center gap-6">
@@ -79,7 +82,6 @@ const AdminDashboard = () => {
           </div>
           
           <div className="flex items-center gap-4 text-[11px] font-bold uppercase">
-            {/* BOTONES HEREDADOS DE LA HOME */}
             <Link to="/proveedores" className="hover:text-gray-300 transition flex items-center gap-1.5 px-2">
               <Building2 size={16} /> Proveedores
             </Link>
@@ -92,18 +94,19 @@ const AdminDashboard = () => {
 
             <div className="h-8 w-[1px] bg-white/20 mx-2"></div>
 
-            {/* BOTONES EXCLUSIVOS DE ADMIN */}
             <button 
               onClick={() => navigate('/usuario')}
               className="bg-[#5692c8]/40 px-4 py-2 rounded-md hover:bg-[#5692c8]/60 transition flex items-center gap-2 border border-white/10"
             >
               <Users size={16} /> Ver Usuarios
             </button>
-            <button className="bg-[#27ae60]/40 px-4 py-2 rounded-md hover:bg-[#27ae60]/60 transition flex items-center gap-2 border border-white/10">
+            <button 
+              onClick={() => navigate('/exportar-reportes')}
+              className="bg-[#27ae60]/40 px-4 py-2 rounded-md hover:bg-[#27ae60]/60 transition flex items-center gap-2 border border-white/10"
+            >
               <Download size={16} /> Exportar Datos
             </button>
 
-            {/* BOTÓN SALIR SESIÓN */}
             <button 
               onClick={handleLogout}
               className="ml-4 flex items-center gap-2 text-yellow-500 hover:text-white transition-colors group"
@@ -170,7 +173,15 @@ const AdminDashboard = () => {
                 {currentRecords.map((c) => (
                   <tr key={c.id} className={`border-b border-gray-100 transition-colors ${c.estado === 0 ? 'bg-red-50/50 italic opacity-80' : 'hover:bg-blue-50/30'}`}>
                     <td className="p-4 border-r border-gray-100 text-center text-slate-400">{c.id}</td>
-                    <td className="p-4 border-r border-gray-100 text-blue-900">{c.nombre}</td>
+                    
+                    {/* SOLUCIÓN AL BUG: Nombre con link para navegar al detalle */}
+                    <td 
+                      className="p-4 border-r border-gray-100 text-blue-900 cursor-pointer hover:underline"
+                      onClick={() => handleVerContrato(c.id)}
+                    >
+                      {c.nombre}
+                    </td>
+
                     <td className="p-4 border-r border-gray-100 uppercase text-[10px]">{c.tipo}</td>
                     <td className="p-4 border-r border-gray-100 text-center">{c.fecha_firma ? new Date(c.fecha_firma).toLocaleDateString() : '-'}</td>
                     <td className="p-4 border-r border-gray-100 text-center">{c.fecha_termino ? new Date(c.fecha_termino).toLocaleDateString() : '-'}</td>

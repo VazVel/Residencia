@@ -16,6 +16,7 @@ import AdminDashboard from './pages/AdminDashboard'
 import GestionUsuarios from './pages/GestionUsuarios'
 import NuevoUsuario from './pages/NuevoUsuario'
 import EditarUsuario from './pages/EditarUsuario'
+import ExportarReportes from './pages/ExportarReportes'
 
 function App() {
   return (
@@ -75,6 +76,11 @@ function App() {
         <Route path="/gestion-catalogos" element={
           <ProtectedRoute adminOnly={true}>
             <GestionCatalogos />
+          </ProtectedRoute>
+        } />
+        <Route path="/exportar-reportes" element={
+          <ProtectedRoute adminOnly={true}>
+            <ExportarReportes />
           </ProtectedRoute>
         } />
 
