@@ -83,7 +83,7 @@ const GestionUsuarios = () => {
           
           <button 
             onClick={() => navigate('/admin')} 
-            className="text-yellow-500 hover:text-white font-bold uppercase text-xs flex items-center gap-2 transition-all"
+            className="bg-[#f39c12]/40 px-4 py-2 rounded-md hover:bg-[#f39c12]/60 transition flex items-center gap-2 border border-white/10 text-white"
           >
             <LogOut size={18} /> Regresar
           </button>

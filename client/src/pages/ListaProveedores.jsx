@@ -77,7 +77,7 @@ const ListaProveedores = () => {
             <Link to="/usuario" className="hover:text-gray-300 transition flex items-center gap-1.5 px-2">
               <Users size={16} /> Usuarios
             </Link>
-            <Link to="/admin" className="text-yellow-500 hover:text-white font-bold uppercase text-xs flex items-center gap-2 transition-all">
+            <Link to="/admin" className="bg-[#f39c12]/40 px-4 py-2 rounded-md hover:bg-[#f39c12]/60 transition flex items-center gap-2 border border-white/10 text-white">
               <LogOut size={18} /> Regresar
             </Link>
           </div>

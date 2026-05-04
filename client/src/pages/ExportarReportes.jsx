@@ -98,13 +98,9 @@ const ExportarReportes = () => {
               <Users size={16} /> Ver Usuarios
             </button>
             <button onClick={() => navigate('/admin')} className="bg-[#f39c12]/40 px-4 py-2 rounded-md hover:bg-[#f39c12]/60 transition flex items-center gap-2 border border-white/10 text-white">
-              <ArrowLeft size={16} /> Volver al Dashboard
+              <LogOut size={18} /> Regresar
             </button>
 
-            <button onClick={handleLogout} className="ml-4 flex items-center gap-2 text-yellow-500 hover:text-white transition-colors group">
-              <LogOut size={18} className="group-hover:scale-110 transition-transform" />
-              <span>Cerrar Sesión</span>
-            </button>
           </div>
         </div>
       </header>
