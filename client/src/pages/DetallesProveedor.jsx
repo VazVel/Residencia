@@ -8,7 +8,6 @@
     const [editando, setEditando] = useState(false);
     const [loading, setLoading] = useState(true);
 
-    // Recuperamos el rol para validar permisos
     const userRole = localStorage.getItem('userRole');
 
     const [formData, setFormData] = useState({

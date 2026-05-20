@@ -123,7 +123,7 @@ const AdminDashboard = () => {
           <div className="flex justify-between items-center mb-8">
             <div className="flex items-center gap-4">
               <h2 className="text-2xl font-black text-[#1d3557] uppercase tracking-tight">
-                Listado Maestro de Contratos
+                Tabla de contratos
               </h2>
               <Search 
                 size={22} 

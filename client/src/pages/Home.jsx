@@ -17,7 +17,6 @@ const Home = () => {
   })
 
   useEffect(() => {
-    // Al cargar, verificamos que el token exista (Protección básica de front)
     const token = localStorage.getItem('token');
     if (!token) {
       navigate('/');

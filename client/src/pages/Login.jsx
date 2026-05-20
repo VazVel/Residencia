@@ -24,7 +24,6 @@ const Login = () => {
     setLoading(true);
 
     try {
-      // Nota: Asegúrate de que la ruta sea /api/auth/login
       const res = await axios.post('/api/auth/login', credentials);
       
       localStorage.setItem('token', res.data.token);
